@@ -1,4 +1,5 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import Navbar from "./components/layouts/Navbar";
@@ -6,11 +7,12 @@ import Users from "./components/users/Users";
 import axios from "axios";
 import Search from "./components/users/Search";
 import Alert from "./components/layouts/Alert";
+import About from "./components/pages/About";
 export class App extends Component {
   state = {
     users: [],
     loading: false,
-    alert:null
+    alert: null
   };
 
   // Search user
@@ -26,27 +28,40 @@ export class App extends Component {
   clearUsers = () => this.setState({ users: [], loading: false });
 
   //Set Alert
-  setAlert = (msg,type)=> {
-    this.setState({ alert: { msg,type }})
-    setTimeout(()=> this.setState({alert:null}),5000)
-  }
+  setAlert = (msg, type) => {
+    this.setState({ alert: { msg, type } });
+    setTimeout(() => this.setState({ alert: null }), 5000);
+  };
   render() {
     const { users, loading } = this.state;
     return (
-      <div className="App">
-        <Navbar icon="fab fa-github" title="Github Finder" />
+      <Router>
+        <div className="App">
+          <Navbar icon="fab fa-github" title="Github Finder" />
+          <div className="mt-5 col-md-9" style={{ margin: "auto" }}>
+            <Alert alert={this.state.alert} />
+            <Switch>
+              <Route
+                exact
+                path="/"
+                render={props => (
+                  <Fragment>
+                    <Search
+                      searchUsers={this.searchUsers}
+                      clearUsers={this.clearUsers}
+                      showClear={users.length > 0 ? true : false}
+                      setAlert={this.setAlert}
+                    />
 
-        <div className="mt-5 col-md-9" style={{ margin: "auto" }}>
-          <Alert alert={this.state.alert}/>
-          <Search
-            searchUsers={this.searchUsers}
-            clearUsers={this.clearUsers}
-            showClear={users.length > 0 ? true : false}
-            setAlert={this.setAlert}
-          />
+                    <Users loading={loading} users={users} />
+                  </Fragment>
+                )}
+              ></Route>
+              <Route exact path="/about" component={About} />
+            </Switch>
+          </div>
         </div>
-        <Users loading={loading} users={users} />
-      </div>
+      </Router>
     );
   }
 }
