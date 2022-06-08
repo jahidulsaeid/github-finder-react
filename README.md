@@ -21,4 +21,4 @@ Install dependencies
 Run the project
 * `npm start`
 
-DONE!
+DONE
